@@ -1,0 +1,18 @@
+/**
+ * Configuratie voor de theseo-mcp Worker.
+ * Documentatie: https://developers.cloudflare.com/workers/wrangler/configuration/
+ *
+ * Deze server heeft geen secrets nodig: hij praat alleen met de publieke
+ * API-endpoints van de TheSEO site-Worker. De GOOGLE_PLACES_API_KEY voor de
+ * vindbaarheidscheck leeft op DIE Worker, niet hier.
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "theseo-mcp",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-07-02",
+	"compatibility_flags": ["nodejs_compat"],
+	"observability": {
+		"enabled": true
+	}
+}

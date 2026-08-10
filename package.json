@@ -1,0 +1,31 @@
+{
+	"name": "theseo-mcp",
+	"version": "0.1.0",
+	"description": "Open-source remote MCP-server van TheSEO: gratis SEO-scan, lokale vindbaarheidscheck, skill-zoeker en het bedrijfsbrein-sjabloon als MCP-tools.",
+	"private": true,
+	"type": "module",
+	"license": "MIT",
+	"homepage": "https://theseo.nl",
+	"scripts": {
+		"dev": "wrangler dev",
+		"deploy": "wrangler deploy",
+		"dry-run": "wrangler deploy --dry-run",
+		"check": "tsc --noEmit",
+		"genereer-catalogus": "node scripts/genereer-catalogus.mjs",
+		"test": "node --import tsx --test test/*.test.ts"
+	},
+	"dependencies": {
+		"@modelcontextprotocol/sdk": "1.30.0",
+		"@modelcontextprotocol/server": "2.0.0",
+		"agents": "^0.20.1",
+		"zod": "^4.4.3"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^5.20260801.1",
+		"@modelcontextprotocol/client": "2.0.0",
+		"@types/node": "^22.10.0",
+		"tsx": "^4.19.0",
+		"typescript": "^5.9.2",
+		"wrangler": "^4.105.0"
+	}
+}
