@@ -4,3 +4,6 @@ dist/
 .dev.vars
 *.log
 .DS_Store
+
+# lokaal gereedschap, niet meedeployen
+tools/
