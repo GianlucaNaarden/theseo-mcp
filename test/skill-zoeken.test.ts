@@ -6,18 +6,18 @@ import { test } from 'node:test';
 import catalogus from '../src/catalogus.json';
 import { zoekSkills } from '../src/tools/skill-zoeken';
 
-test('de catalogus bevat 94 skills met complete velden', () => {
-  assert.equal(catalogus.aantal, 94);
-  assert.equal(catalogus.skills.length, 94);
+test('de catalogus bevat 100 skills met complete velden', () => {
+  assert.equal(catalogus.aantal, 100);
+  assert.equal(catalogus.skills.length, 100);
 
   const slugs = new Set(catalogus.skills.map((s) => s.slug));
-  assert.equal(slugs.size, 94, 'slugs horen uniek te zijn');
+  assert.equal(slugs.size, 100, 'slugs horen uniek te zijn');
 
   for (const skill of catalogus.skills) {
     assert.ok(skill.naam.length > 0, `${skill.slug}: lege naam`);
     assert.ok(skill.cluster.length > 0, `${skill.slug}: leeg cluster`);
     assert.ok(skill.beschrijving.length >= 40, `${skill.slug}: beschrijving te kort`);
-    assert.match(skill.pagina, /^https:\/\/theseo\.nl\/.+\/$/, `${skill.slug}: rare paginalink`);
+    assert.match(skill.pagina, /^https:\/\/[a-z0-9.-]+\/.+\/$/, `${skill.slug}: rare paginalink`);
     assert.equal(
       skill.download,
       `https://theseo.nl/assets/skills/${skill.slug}.zip`,

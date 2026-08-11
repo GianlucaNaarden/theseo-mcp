@@ -6,6 +6,25 @@
 export const UPSTREAM_BASIS = 'https://theseo-site.sales-cc8.workers.dev';
 export const SITE = 'https://theseo.nl';
 
+/**
+ * Het adres dat we in antwoorden aan gebruikers meegeven.
+ *
+ * Let op: theseo.nl draait op dit moment nog de oude WordPress-site. De
+ * nieuwe paginas en alle skill-downloads staan op de Worker. Zolang de
+ * overzetting niet gedaan is, geeft elke https://theseo.nl/assets/skills/...
+ * link een 404, en dat is precies wat een gebruiker van skill_zoeken te zien
+ * kreeg. Daarom wijzen de links voorlopig naar het Worker-adres.
+ *
+ * Bij de overzetting: zet dit terug op SITE en klaar. De catalogus zelf
+ * bewaart de theseo.nl-adressen, dus er hoeft verder niets mee te gebeuren.
+ */
+export const PUBLIEKE_BASIS = UPSTREAM_BASIS;
+
+/** Zet theseo.nl-adressen om naar het adres dat vandaag werkt. */
+export function publiekAdres(url: string): string {
+  return typeof url === 'string' ? url.replace('https://theseo.nl', PUBLIEKE_BASIS) : url;
+}
+
 /** Hoe lang we maximaal op een upstream-antwoord wachten (ms). */
 export const UPSTREAM_TIMEOUT_MS = 30_000;
 

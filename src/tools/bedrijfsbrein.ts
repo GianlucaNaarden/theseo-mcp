@@ -1,5 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/server';
 import bedrijfsbrein from '../bedrijfsbrein.json';
+import { publiekAdres } from '../config';
 
 export function registreerBedrijfsbrein(server: McpServer): void {
   server.registerTool(
@@ -16,8 +17,8 @@ export function registreerBedrijfsbrein(server: McpServer): void {
     async () => {
       const tekst = [
         `Bedrijfsbrein-sjabloon van TheSEO`,
-        `Uitlegpagina: ${bedrijfsbrein.pagina}`,
-        `Download als zip: ${bedrijfsbrein.download}`,
+        `Uitlegpagina: ${publiekAdres(bedrijfsbrein.pagina)}`,
+        `Download als zip: ${publiekAdres(bedrijfsbrein.download)}`,
         '',
         '===== LEESMIJ.md =====',
         '',

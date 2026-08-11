@@ -1,3 +1,4 @@
+import { publiekAdres } from '../config';
 import type { McpServer } from '@modelcontextprotocol/server';
 import * as z from 'zod/v4';
 import catalogus from '../catalogus.json';
@@ -110,8 +111,8 @@ export function registreerSkillZoeken(server: McpServer): void {
       const regels = treffers.map((t, i) => [
         `${i + 1}. ${t.naam} (cluster: ${t.cluster})`,
         `   ${kort(t.beschrijving)}`,
-        `   Pagina: ${t.pagina}`,
-        `   Download: ${t.download}`,
+        `   Pagina: ${publiekAdres(t.pagina)}`,
+        `   Download: ${publiekAdres(t.download)}`,
       ].join('\n'));
 
       const tekst = [

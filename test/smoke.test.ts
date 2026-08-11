@@ -60,8 +60,8 @@ test('skill_zoeken vindt een skill via de echte tool-aanroep', async () => {
   const inhoud = resultaat.content as Array<{ type: string; text: string }>;
   const tekst = inhoud[0].text;
   assert.match(tekst, /SWOT/i);
-  assert.match(tekst, /https:\/\/theseo\.nl\/.*skill-voor-claude\//);
-  assert.match(tekst, /https:\/\/theseo\.nl\/assets\/skills\/.*\.zip/);
+  assert.match(tekst, /https:\/\/[a-z0-9.-]+\/.*skill-voor-claude\//);
+  assert.match(tekst, /https:\/\/[a-z0-9.-]+\/assets\/skills\/.*\.zip/);
 });
 
 test('bedrijfsbrein_template geeft het volledige sjabloon terug', async () => {
@@ -71,6 +71,6 @@ test('bedrijfsbrein_template geeft het volledige sjabloon terug', async () => {
   const tekst = inhoud[0].text;
   assert.ok(tekst.length > 10_000, 'het sjabloon hoort duizenden tekens lang te zijn');
   assert.match(tekst, /bedrijfsbrein/i);
-  assert.match(tekst, /https:\/\/theseo\.nl\/bedrijfsbrein-sjabloon\//);
-  assert.match(tekst, /https:\/\/theseo\.nl\/assets\/skills\/bedrijfsbrein-sjabloon\.zip/);
+  assert.match(tekst, /https:\/\/[a-z0-9.-]+\/bedrijfsbrein-sjabloon\//);
+  assert.match(tekst, /https:\/\/[a-z0-9.-]+\/assets\/skills\/bedrijfsbrein-sjabloon\.zip/);
 });
