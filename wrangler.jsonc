@@ -12,6 +12,16 @@
 	"main": "src/index.ts",
 	"compatibility_date": "2026-07-02",
 	"compatibility_flags": ["nodejs_compat"],
+	// Rechtstreekse route naar de site-Worker. Een gewone fetch naar de
+	// workers.dev URL van diezelfde account belandt bij de statische bestanden
+	// en geeft dus 404 op /api/scan; via deze binding komt het verzoek bij het
+	// script terecht.
+	"services": [
+		{
+			"binding": "SITE_WORKER",
+			"service": "theseo-site"
+		}
+	],
 	"observability": {
 		"enabled": true
 	}

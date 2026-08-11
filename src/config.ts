@@ -10,6 +10,27 @@ export const SITE = 'https://theseo.nl';
 export const UPSTREAM_TIMEOUT_MS = 30_000;
 
 /**
+ * De service-binding naar de site-Worker.
+ *
+ * Waarom dit nodig is: een gewone fetch van deze Worker naar de workers.dev
+ * URL van de site-Worker blijft binnen hetzelfde account hangen en belandt bij
+ * de statische bestanden in plaats van bij het script. `/api/scan` bestaat
+ * daar niet als bestand, dus kwam er een 404 met een HTML-pagina terug en
+ * meldde elke scan "onleesbaar antwoord". Van buitenaf werkte dezelfde
+ * aanroep wel, wat het lang onzichtbaar hield. Een service-binding is de
+ * ondersteunde route van Worker naar Worker en gaat rechtstreeks naar het
+ * script.
+ */
+let siteBinding: { fetch: typeof fetch } | undefined;
+
+/** Wordt bij elk verzoek gezet vanuit de Worker-entry. De binding is per
+ *  deployment constant, dus dit is veilig bij gelijktijdige verzoeken. */
+export function zetSiteBinding(env: unknown): void {
+  const kandidaat = (env as { SITE_WORKER?: { fetch: typeof fetch } } | null)?.SITE_WORKER;
+  if (kandidaat && typeof kandidaat.fetch === 'function') siteBinding = kandidaat;
+}
+
+/**
  * Roept een TheSEO API-endpoint aan en geeft het JSON-antwoord terug,
  * of een eerlijk Nederlands foutbericht als het niet lukt.
  */
@@ -17,14 +38,17 @@ export async function roepUpstreamAan(
   pad: string,
   body: Record<string, unknown>,
 ): Promise<{ data?: Record<string, unknown>; fout?: string }> {
+  const verzoek: RequestInit = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+  };
   let res: Response;
   try {
-    res = await fetch(`${UPSTREAM_BASIS}${pad}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
-    });
+    res = siteBinding
+      ? await siteBinding.fetch(`${UPSTREAM_BASIS}${pad}`, verzoek)
+      : await fetch(`${UPSTREAM_BASIS}${pad}`, verzoek);
   } catch {
     return { fout: 'De TheSEO server reageerde niet op tijd. Probeer het zo nog eens.' };
   }

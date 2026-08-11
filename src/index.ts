@@ -1,5 +1,5 @@
 import { createMcpHandler } from 'agents/mcp/server';
-import { SITE } from './config';
+import { SITE, zetSiteBinding } from './config';
 import { createServer, SERVER_NAAM, SERVER_VERSIE } from './server';
 
 /**
@@ -11,7 +11,8 @@ import { createServer, SERVER_NAAM, SERVER_VERSIE } from './server';
 const handler = createMcpHandler(createServer);
 
 export default {
-  fetch(request: Request, env: unknown, ctx: ExecutionContext): Promise<Response> | Response {
+  async fetch(request: Request, env: unknown, ctx: ExecutionContext): Promise<Response> {
+    zetSiteBinding(env);
     const url = new URL(request.url);
 
     if (url.pathname === '/mcp') {
