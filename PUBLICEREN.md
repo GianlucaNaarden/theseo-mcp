@@ -16,23 +16,30 @@ GitHub-account dat publiceert in plaats van het merk.
 
 ### Stap 1: het DNS-record (jij, eenmalig)
 
-Zet in Cloudflare bij de zone theseo.nl een TXT-record:
+Zet in Cloudflare bij de zone theseo.nl een TXT-record op het HOOFDDOMEIN:
 
 ```
-naam:    _mcp-registry
+naam:    @        (oftewel theseo.nl zelf, niet _mcp-registry)
 type:    TXT
 waarde:  v=MCPv1; k=ed25519; p=WDZTS6WebFFpNGzRr9AmyzB6xJGRvjnZ/lgAXsGwsQg=
 ```
+
+Let op, dit ging bij de eerste poging mis. Meerdere handleidingen noemen een
+selector `_mcp-registry`, maar het register zelf weigert dat en zegt het
+letterlijk: "MCP DNS auth requires the record at the apex domain, not under a
+selector". Een eventueel record onder `_mcp-registry` mag blijven staan of
+weg, het wordt genegeerd. Een extra TXT-record op het hoofddomein naast de
+bestaande (zoals SPF) is geen probleem, dat mag.
 
 De bijbehorende prive-sleutel staat in `~/.mcp-theseo-dns.key` (en de hex-vorm
 in `~/.mcp-theseo-dns.hex`), alleen leesbaar voor jouw gebruiker. Die sleutel
 hoort nergens in git en nergens in een chat. Raakt hij kwijt, dan genereren we
 een nieuw paar en vervang je het TXT-record.
 
-Controleren of het record er staat:
+Controleren of het record er staat (je zoekt de regel die begint met v=MCPv1):
 
 ```bash
-dig +short TXT _mcp-registry.theseo.nl @1.1.1.1
+dig +short TXT theseo.nl @1.1.1.1
 ```
 
 ### Stap 2: inloggen en publiceren
