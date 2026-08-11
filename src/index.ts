@@ -22,9 +22,17 @@ export default {
     return Response.json({
       naam: SERVER_NAAM,
       versie: SERVER_VERSIE,
-      wat: 'Open-source remote MCP-server van TheSEO met vier gratis marketing-tools.',
+      wat: 'Open-source remote MCP-server van TheSEO met zeven gratis marketing-tools.',
       endpoint: '/mcp',
-      tools: ['seo_scan', 'lokale_vindbaarheid_check', 'skill_zoeken', 'bedrijfsbrein_template'],
+      tools: [
+        'seo_scan',
+        'lokale_vindbaarheid_check',
+        'skill_zoeken',
+        'bedrijfsbrein_template',
+        'ai_index_branche',
+        'ai_index_vragen',
+        'ai_index_bedrijf',
+      ],
       site: SITE,
     });
   },

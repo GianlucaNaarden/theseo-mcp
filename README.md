@@ -2,13 +2,13 @@
 
 Open-source remote MCP-server van [TheSEO](https://theseo.nl), instituut voor zichtbaarheid. Voor zover wij hebben kunnen nagaan de eerste MCP-server van een Nederlands marketingbureau.
 
-MCP (Model Context Protocol) is de open standaard waarmee AI-assistenten zoals Claude externe tools kunnen gebruiken. Voeg deze server één keer toe en je AI kan zelf een SEO-scan draaien, lokale vindbaarheid checken, gratis Claude-skills opzoeken en het bedrijfsbrein-sjabloon ophalen. Alles wat deze server aanbiedt is gratis en vraagt geen account.
+MCP (Model Context Protocol) is de open standaard waarmee AI-assistenten zoals Claude externe tools kunnen gebruiken. Voeg deze server één keer toe en je AI kan zelf een SEO-scan draaien, lokale vindbaarheid checken, gratis Claude-skills opzoeken, het bedrijfsbrein-sjabloon ophalen en onze eigen AI-Index bevragen. Alles wat deze server aanbiedt is gratis en vraagt geen account.
 
 De server draait als Cloudflare Worker met Streamable HTTP transport.
 
 **Endpoint:** `https://theseo-mcp.sales-cc8.workers.dev/mcp`
 
-## De vier tools
+## De zeven tools
 
 ### 1. `seo_scan`
 
@@ -59,6 +59,33 @@ Voorbeeld-aanroep:
 > "Haal het bedrijfsbrein-sjabloon op en vul het in voor mijn schildersbedrijf."
 
 Deze tool heeft geen parameters.
+
+
+### 5. `ai_index_branche`
+
+Geeft per branche wat onze eigen AI-Index gemeten heeft: het aantal geldige metingen, de weigeringen met de letterlijke reden van het model, de tien meest genoemde bedrijven en hoe geconcentreerd het beeld is.
+
+```json
+{ "branche": "logistiek" }
+```
+
+### 6. `ai_index_vragen`
+
+Geeft de letterlijke vragen die wij aan het model stellen voor een branche, plus de meetmethode. Daarmee kun je de meting zelf naspelen.
+
+```json
+{ "branche": "horeca", "max": 5 }
+```
+
+### 7. `ai_index_bedrijf`
+
+Zoekt of een bedrijfsnaam voorkomt in de metingen, en zo ja in welke branches en bij welke vragen. Komt een naam er niet in voor, dan zegt de tool dat het uitdrukkelijk geen oordeel is: het is een steekproef met een vaste vragenlijst.
+
+```json
+{ "bedrijfsnaam": "bol.com" }
+```
+
+Alle drie eindigen met dezelfde bronregel: het model, het aantal metingen, de laatste meetdatum, de licentie CC BY 4.0 en de link naar de volledige bijsluiter. Geen trends over de tijd en geen uitspraken over bezoekersaantallen: de metingen zijn met temperature 1 gedaan, dus verschillen tussen momenten zijn ook samplingruis.
 
 ## Installatie
 

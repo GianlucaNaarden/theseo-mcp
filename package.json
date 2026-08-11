@@ -12,6 +12,7 @@
 		"dry-run": "wrangler deploy --dry-run",
 		"check": "tsc --noEmit",
 		"genereer-catalogus": "node scripts/genereer-catalogus.mjs",
+		"genereer-ai-index": "node scripts/genereer-ai-index.mjs",
 		"test": "node --import tsx --test test/*.test.ts"
 	},
 	"dependencies": {

@@ -5,5 +5,7 @@ dist/
 *.log
 .DS_Store
 
-# lokaal gereedschap, niet meedeployen
-tools/
+# lokaal gereedschap, niet meedeployen (alleen de map in de repo-wortel,
+# want zonder de schuine streep vooraan negeert git ook src/tools/ en
+# verdwijnen nieuwe tools stilletjes uit elke commit)
+/tools/

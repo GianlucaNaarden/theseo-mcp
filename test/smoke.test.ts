@@ -37,10 +37,13 @@ test('de server meldt zich met de juiste naam', () => {
   assert.equal(client.getServerVersion()?.name, SERVER_NAAM);
 });
 
-test('tools/list geeft precies de vier tools terug', async () => {
+test('tools/list geeft precies de zeven tools terug', async () => {
   const { tools } = await client.listTools();
   const namen = tools.map((t) => t.name).sort();
   assert.deepEqual(namen, [
+    'ai_index_bedrijf',
+    'ai_index_branche',
+    'ai_index_vragen',
     'bedrijfsbrein_template',
     'lokale_vindbaarheid_check',
     'seo_scan',
