@@ -11,7 +11,7 @@ import { registreerSkillZoeken } from './tools/skill-zoeken';
 import { registreerVindbaarheid } from './tools/vindbaarheid';
 
 export const SERVER_NAAM = 'theseo-mcp';
-export const SERVER_VERSIE = '0.3.0';
+export const SERVER_VERSIE = '0.5.0';
 
 /** De zeven gratis tools, in vaste volgorde. */
 export const GRATIS_TOOLS = TOOL_NAMEN;

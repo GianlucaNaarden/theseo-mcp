@@ -1,46 +1,46 @@
 {
-	"name": "theseo-mcp",
-	"version": "0.3.0",
-	"description": "Open-source remote MCP-server van TheSEO: gratis SEO-scan, lokale vindbaarheidscheck, skill-zoeker, AI-Index en het bedrijfsbrein-sjabloon als MCP-tools.",
-	"private": true,
-	"type": "module",
-	"license": "MIT",
-	"homepage": "https://theseo.nl",
-	"exports": {
-		".": {
-			"types": "./src/bibliotheek.ts",
-			"default": "./src/bibliotheek.ts"
-		},
-		"./package.json": "./package.json"
-	},
-	"files": [
-		"src/",
-		"README.md",
-		"LICENSE"
-	],
-	"scripts": {
-		"dev": "wrangler dev",
-		"deploy": "wrangler deploy",
-		"dry-run": "wrangler deploy --dry-run",
-		"check": "tsc --noEmit",
-		"genereer-catalogus": "node scripts/genereer-catalogus.mjs",
-		"genereer-ai-index": "node scripts/genereer-ai-index.mjs",
-		"test": "node --import tsx --test test/*.test.ts"
-	},
-	"peerDependencies": {
-		"@modelcontextprotocol/server": "2.0.0",
-		"zod": "4.4.3"
-	},
-	"devDependencies": {
-		"@cloudflare/workers-types": "5.20260810.1",
-		"@modelcontextprotocol/client": "2.0.0",
-		"@modelcontextprotocol/sdk": "1.30.0",
-		"@modelcontextprotocol/server": "2.0.0",
-		"@types/node": "22.20.1",
-		"agents": "0.20.1",
-		"tsx": "4.23.12",
-		"typescript": "5.9.3",
-		"wrangler": "4.120.0",
-		"zod": "4.4.3"
-	}
+  "name": "theseo-mcp",
+  "version": "0.5.0",
+  "description": "Open-source remote MCP-server van TheSEO: gratis SEO-scan, lokale vindbaarheidscheck, skill-zoeker, AI-Index en het bedrijfsbrein-sjabloon als MCP-tools.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://theseo.nl",
+  "exports": {
+    ".": {
+      "types": "./src/bibliotheek.ts",
+      "default": "./src/bibliotheek.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "dry-run": "wrangler deploy --dry-run",
+    "check": "tsc --noEmit",
+    "genereer-catalogus": "node scripts/genereer-catalogus.mjs",
+    "genereer-ai-index": "node scripts/genereer-ai-index.mjs",
+    "test": "node --import tsx --test test/*.test.ts"
+  },
+  "peerDependencies": {
+    "@modelcontextprotocol/server": "2.0.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20260810.1",
+    "@modelcontextprotocol/client": "2.0.0",
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "@modelcontextprotocol/server": "2.0.0",
+    "@types/node": "22.20.1",
+    "agents": "0.20.1",
+    "tsx": "4.23.12",
+    "typescript": "5.9.3",
+    "wrangler": "4.120.0",
+    "zod": "4.4.3"
+  }
 }
