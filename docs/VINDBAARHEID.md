@@ -37,7 +37,7 @@ Daarna een mail naar partnerships@github.com met de vraag om opname in github.co
 
 Waar: https://claude.ai/directory/manage, Submit new, MCP connector. Kan alleen met een betaald Claude-plan.
 
-Aanmelden met het adres **https://mcp.theseo.nl/open**, niet /mcp. Reden: het directorybeleid (Software Directory Policy 3F) eist dat je elke API en elke externe bron bezit of beheert die de connector aanspreekt. /open heeft alleen de acht tools op eigen gegevens (AI-Index, merk per model, gat, vakregels, skills, bedrijfsbrein) en vraagt nooit om in te loggen. De tools die bij derden ophalen (social, open voertuigdata, CBS, PDOK, crawlercheck) en de accounttools blijven op /mcp voor wie die zelf toevoegt. Zodra de accounts open zijn (JU1 vastgesteld) kan de vermelding worden uitgebreid met "Required when the server asks".
+Aanmelden met het adres **https://mcp.theseo.nl/open**, niet /mcp. Reden: het directorybeleid (Software Directory Policy 3F) eist dat je elke API en elke externe bron bezit of beheert die de connector aanspreekt. /open heeft alleen de zes tools op eigen gegevens (de drie AI-Index-tools, merk per model, gat, vakregels) en vraagt nooit om in te loggen. skill_zoeken en het bedrijfsbrein-sjabloon blijven op /mcp: hun uitvoer bevat zinnen die zich tot de AI richten en verwijzingen naar eigen pagina's. De tools die bij derden ophalen (social, open voertuigdata, CBS, PDOK, crawlercheck) en de accounttools blijven op /mcp voor wie die zelf toevoegt. Zodra de accounts open zijn (JU1 vastgesteld) kan de vermelding worden uitgebreid met "Required when the server asks".
 
 Voorwaarden voor het versturen, in deze volgorde:
 1. De sleutels van de meter staan en de eerste ronde is klaar, zodat ai_zichtbaarheid_merk echte metingen per model geeft. Anders ziet een reviewer bij de belangrijkste tool alleen "nog geen meting".
@@ -47,7 +47,7 @@ Voorwaarden voor het versturen, in deze volgorde:
 ### Portaal, stap voor stap
 
 1. **Connection:** Universal URL, `https://mcp.theseo.nl/open`.
-2. **Tools:** synct vanzelf; alle acht hebben title en readOnlyHint.
+2. **Tools:** synct vanzelf; alle zes hebben title en readOnlyHint.
 3. **Listing:**
    - Naam: TheSEO AI-Index
    - Korte zin (onder 200): Meet hoe vaak AI-modellen je bedrijf noemen in Nederlandse branchevragen, zie waar concurrenten wel genoemd worden, en zoek vakregels met bron.
@@ -58,11 +58,11 @@ Voorwaarden voor het versturen, in deze volgorde:
    - Support: sales@theseo.nl
    - Icoon: het merkteken van TheSEO, vierkant PNG.
    - Slug: theseo-ai-index (blijvend na publicatie).
-4. **Use cases:** zichtbaarheid van een bedrijf in AI-antwoorden meten en volgen; gaten ten opzichte van concurrenten vinden; Nederlandse vakregels met bron opzoeken; gratis Claude-skills en een bedrijfsbrein-sjabloon vinden. Vooraf nodig: niets, geen account. Leest of schrijft: alleen lezen.
+4. **Use cases:** zichtbaarheid van een bedrijf in AI-antwoorden meten en volgen; gaten ten opzichte van concurrenten vinden; de meting naspelen met de letterlijke vragen; Nederlandse vakregels met bron opzoeken. Vooraf nodig: niets, geen account. Leest of schrijft: alleen lezen.
 5. **Company:** Mansotti handelend als TheSEO, https://theseo.nl, contact Gianluca Amante Naarden.
 6. **Authentication:** geen (No authentication).
 7. **Data handling:** eigen API (first-party). Geen gezondheidsdata, geen gesponsorde inhoud.
-8. **Test & launch:** "Geen account nodig. Voeg https://mcp.theseo.nl/open toe als custom connector en probeer: (1) Hoe vaak noemen AI-modellen Coolblue bij vragen over elektronica? (2) In welke vragen over logistiek worden concurrenten van PostNL genoemd en PostNL zelf niet? (3) Welke regels gelden er voor een garage in Nederland? (4) Welke vragen stelt de AI-Index voor horeca? (5) Zoek een gratis Claude-skill voor een SWOT-analyse." Bevestigen dat elke tool zelf is aangeroepen als custom connector.
+8. **Test & launch:** "Geen account nodig. Voeg https://mcp.theseo.nl/open toe als custom connector en probeer: (1) Hoe vaak noemen AI-modellen Coolblue bij vragen over elektronica? (2) In welke vragen over logistiek worden concurrenten van PostNL genoemd en PostNL zelf niet? (3) Welke regels gelden er voor een garage in Nederland? (4) Welke vragen stelt de AI-Index voor horeca?" Bevestigen dat elke tool zelf is aangeroepen als custom connector.
 9. **Compliance:** de zeven verklaringen lezen en accepteren (Gianluca).
 10. **Review and submit:** waarschuwingen nalezen, dan versturen.
 
