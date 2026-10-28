@@ -6,12 +6,25 @@ import { test } from 'node:test';
 import catalogus from '../src/catalogus.json';
 import { zoekSkills } from '../src/tools/skill-zoeken';
 
-test('de catalogus bevat 100 skills met complete velden', () => {
-  assert.equal(catalogus.aantal, 100);
-  assert.equal(catalogus.skills.length, 100);
+/**
+ * Het aantal skills staat hier bewust NIET als vast getal. Dat was er wel, en
+ * daardoor moest iemand die de catalogus opnieuw genereerde ook deze test
+ * aanpassen; in de praktijk gebeurde het omgekeerde en bleef de catalogus staan.
+ * Wat hier nog wel hard staat is een ondergrens, zodat een generator die maar
+ * een handvol skills vindt alsnog een rood kruis geeft.
+ */
+const MINIMAAL_AANTAL = 120;
+
+test('de catalogus is compleet en intern consistent', () => {
+  assert.equal(catalogus.aantal, catalogus.skills.length);
+  assert.ok(
+    catalogus.skills.length >= MINIMAAL_AANTAL,
+    `verwacht minstens ${MINIMAAL_AANTAL} skills, gevonden ${catalogus.skills.length}`,
+  );
+  assert.equal(catalogus.aantal_hub + catalogus.aantal_artikel, catalogus.aantal);
 
   const slugs = new Set(catalogus.skills.map((s) => s.slug));
-  assert.equal(slugs.size, 100, 'slugs horen uniek te zijn');
+  assert.equal(slugs.size, catalogus.skills.length, 'slugs horen uniek te zijn');
 
   for (const skill of catalogus.skills) {
     assert.ok(skill.naam.length > 0, `${skill.slug}: lege naam`);
@@ -24,6 +37,19 @@ test('de catalogus bevat 100 skills met complete velden', () => {
       `${skill.slug}: download-URL volgt het vaste patroon niet`,
     );
   }
+});
+
+test('de vakskills die bij een artikel horen staan er ook in', () => {
+  const bijArtikel = catalogus.skills.filter((s) => s.bron === 'artikel');
+  assert.ok(bijArtikel.length > 0, 'geen enkele skill met bron artikel gevonden');
+
+  // Concreet geval uit golf 1: deze skill hangt onder een artikel en niet onder
+  // de skills-hub. Precies dit soort skill viel eerder buiten de catalogus.
+  const treffers = zoekSkills(catalogus.skills, 'lokale seo dakdekker');
+  assert.ok(
+    treffers.some((t) => t.slug === 'lokale-seo-voor-dakdekkers-skill'),
+    'de dakdekkersskill hoort vindbaar te zijn',
+  );
 });
 
 test('zoeken op een naam-trefwoord zet die skill bovenaan', () => {

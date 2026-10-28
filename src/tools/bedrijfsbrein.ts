@@ -1,8 +1,9 @@
 import type { McpServer } from '@modelcontextprotocol/server';
 import bedrijfsbrein from '../bedrijfsbrein.json';
 import { publiekAdres } from '../config';
+import type { Gebruiksteller } from '../gebruiksteller';
 
-export function registreerBedrijfsbrein(server: McpServer): void {
+export function registreerBedrijfsbrein(server: McpServer, telGebruik: Gebruiksteller): void {
   server.registerTool(
     'bedrijfsbrein_template',
     {
@@ -12,9 +13,10 @@ export function registreerBedrijfsbrein(server: McpServer): void {
         + 'invulbaar bedrijfsbrein.md contextbestand dat een AI leert wie een bedrijf is (aanbod, '
         + 'doelgroep, tone of voice, werkwijze). Gebruik dit om het sjabloon direct voor een bedrijf '
         + 'in te vullen. Werkt in Claude, ChatGPT, Codex en Cursor.',
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: true, openWorldHint: false },
     },
     async () => {
+      telGebruik('bedrijfsbrein_template');
       const tekst = [
         `Bedrijfsbrein-sjabloon van TheSEO`,
         `Uitlegpagina: ${publiekAdres(bedrijfsbrein.pagina)}`,

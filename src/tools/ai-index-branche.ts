@@ -1,5 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/server';
 import * as z from 'zod/v4';
+import type { Gebruiksteller } from '../gebruiksteller';
 import {
   brancheNamen,
   getal,
@@ -77,7 +78,7 @@ function weigeringen(b: Branche): string[] {
   ];
 }
 
-export function registreerAiIndexBranche(server: McpServer): void {
+export function registreerAiIndexBranche(server: McpServer, telGebruik: Gebruiksteller): void {
   server.registerTool(
     'ai_index_branche',
     {
@@ -105,9 +106,10 @@ export function registreerAiIndexBranche(server: McpServer): void {
             + 'Kleine letters en een deel van de naam zijn genoeg.',
           ),
       }),
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: true, openWorldHint: false },
     },
     async ({ branche }) => {
+      telGebruik('ai_index_branche');
       const uitkomst = zoekBranche(branche);
 
       if (uitkomst.soort === 'geen') {

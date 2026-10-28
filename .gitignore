@@ -9,3 +9,6 @@ dist/
 # want zonder de schuine streep vooraan negeert git ook src/tools/ en
 # verdwijnen nieuwe tools stilletjes uit elke commit)
 /tools/
+
+# interne verslagen van bouwpakketten (MC1 en later): niet naar de publieke repo
+/docs/verslag-*.md

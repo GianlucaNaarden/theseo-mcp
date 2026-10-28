@@ -1,6 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/server';
 import * as z from 'zod/v4';
-import { roepUpstreamAan, SITE } from '../config';
+import { SITE, type Upstream } from '../config';
+import type { Gebruiksteller } from '../gebruiksteller';
 
 interface ScanCheck {
   id: string;
@@ -26,7 +27,11 @@ function checksNaarTekst(titel: string, checks: unknown): string {
   return `\n${titel}\n${regels.join('\n')}`;
 }
 
-export function registreerSeoScan(server: McpServer): void {
+export function registreerSeoScan(
+  server: McpServer,
+  telGebruik: Gebruiksteller,
+  upstream: Upstream,
+): void {
   server.registerTool(
     'seo_scan',
     {
@@ -37,7 +42,8 @@ export function registreerSeoScan(server: McpServer): void {
         + 'koppenstructuur, alt-teksten, canonical, interne links), content (woordaantal, structuur, '
         + 'indexeerbaarheid) en AI-gereedheid (Schema.org, FAQ-schema, Open Graph, Twitter Card, '
         + 'entiteitshelderheid). Dit is de gratis scanner van theseo.nl en geen volledige audit: hij '
-        + 'bekijkt één pagina en meet alleen wat automatisch meetbaar is.',
+        + 'bekijkt één pagina en meet alleen wat automatisch meetbaar is. '
+        + 'De siteflow bewaart het gescande webadres en de uitslag als lead in het CRM.',
       inputSchema: z.object({
         url: z
           .string()
@@ -45,10 +51,11 @@ export function registreerSeoScan(server: McpServer): void {
           .max(400)
           .describe('De URL van de pagina die gescand moet worden, bijvoorbeeld https://voorbeeld.nl'),
       }),
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true },
     },
     async ({ url }) => {
-      const { data, fout } = await roepUpstreamAan('/api/scan', { url });
+      telGebruik('seo_scan');
+      const { data, fout } = await upstream('/api/scan', { url });
       if (fout || !data) {
         return { content: [{ type: 'text', text: `De scan lukte niet: ${fout}` }], isError: true };
       }

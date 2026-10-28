@@ -170,9 +170,16 @@ const branchesUit = brancheVolgorde.map((b) => {
         `${b.naam}: geldige metingen ${b.geldig} tegen ${gepubliceerd.geldige_metingen} in summary.json`,
       );
     }
+    // Twee bedrijven met precies hetzelfde aantal mogen in summary.json in
+    // de andere volgorde staan: dat is sorteervolgorde, geen telfout. Bij
+    // gelijkstand telt het dus als goed zodra de naam met dat aantal ergens
+    // in onze eigen top 10 staat.
+    const gelijkstand = (naam, aantal) => topUit.some(([n, a]) => n === naam && a === aantal);
     gepubliceerd.top10.forEach((rij, i) => {
       const eigen = topUit[i];
-      if (!eigen || eigen[0] !== rij.bedrijf || eigen[1] !== rij.vermeldingen_totaal) {
+      const klopt = eigen && eigen[1] === rij.vermeldingen_totaal
+        && (eigen[0] === rij.bedrijf || gelijkstand(rij.bedrijf, rij.vermeldingen_totaal));
+      if (!klopt) {
         fouten.push(
           `${b.naam} plek ${i + 1}: eigen telling ${eigen ? `${eigen[0]} ${eigen[1]}` : 'ontbreekt'} `
           + `tegen ${rij.bedrijf} ${rij.vermeldingen_totaal} in summary.json`,

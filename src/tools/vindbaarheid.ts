@@ -1,6 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/server';
 import * as z from 'zod/v4';
-import { roepUpstreamAan, SITE } from '../config';
+import { SITE, type Upstream } from '../config';
+import type { Gebruiksteller } from '../gebruiksteller';
 
 interface VcheckPunt {
   id: string;
@@ -16,7 +17,11 @@ interface VcheckNietGemeten {
   reden: string;
 }
 
-export function registreerVindbaarheid(server: McpServer): void {
+export function registreerVindbaarheid(
+  server: McpServer,
+  telGebruik: Gebruiksteller,
+  upstream: Upstream,
+): void {
   server.registerTool(
     'lokale_vindbaarheid_check',
     {
@@ -26,7 +31,8 @@ export function registreerVindbaarheid(server: McpServer): void {
         + 'Bedrijfsprofiel en zijn openingstijden, foto\'s, beoordeling, aantal reviews, website en '
         + 'telefoonnummer op orde. De score telt alleen mee wat werkelijk gemeten is; criteria die '
         + 'niet meetbaar zijn worden expliciet als niet-gemeten teruggegeven, nooit als onvoldoende '
-        + 'geteld. Dit is de gratis check van theseo.nl.',
+        + 'geteld. Dit is de gratis check van theseo.nl. '
+        + 'De siteflow bewaart de ingevoerde bedrijfsnaam, plaats en uitslag als lead in het CRM.',
       inputSchema: z.object({
         bedrijfsnaam: z
           .string()
@@ -35,10 +41,11 @@ export function registreerVindbaarheid(server: McpServer): void {
           .describe('De naam van het bedrijf zoals klanten het zoeken'),
         stad: z.string().min(1).max(80).describe('De plaats waar het bedrijf gevestigd is'),
       }),
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true },
     },
     async ({ bedrijfsnaam, stad }) => {
-      const { data, fout } = await roepUpstreamAan('/api/vcheck', { bedrijfsnaam, stad });
+      telGebruik('lokale_vindbaarheid_check');
+      const { data, fout } = await upstream('/api/vcheck', { bedrijfsnaam, stad });
       if (fout || !data) {
         // Ook het geval "De lokale check is nog niet geconfigureerd op de
         // server." komt hier eerlijk doorheen; dat bericht komt letterlijk

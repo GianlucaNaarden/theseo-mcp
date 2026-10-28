@@ -12,6 +12,15 @@
 	"main": "src/index.ts",
 	"compatibility_date": "2026-07-02",
 	"compatibility_flags": ["nodejs_compat"],
+	// Privacyarme gebruikstelling. Elk punt bevat uitsluitend de toolnaam als
+	// index, de UTC-dag als blob en het getal 1. Invoer, headers, IP-adressen en
+	// gesprekstekst worden niet naar deze dataset geschreven.
+	"analytics_engine_datasets": [
+		{
+			"binding": "MCP_USAGE",
+			"dataset": "theseo_mcp_tool_usage"
+		}
+	],
 	// Rechtstreekse route naar de site-Worker. Een gewone fetch naar de
 	// workers.dev URL van diezelfde account belandt bij de statische bestanden
 	// en geeft dus 404 op /api/scan; via deze binding komt het verzoek bij het
@@ -23,6 +32,14 @@
 		}
 	],
 	"observability": {
-		"enabled": true
+		"enabled": true,
+		"logs": {
+			"enabled": true,
+			"head_sampling_rate": 1,
+			"invocation_logs": false
+		},
+		"traces": {
+			"enabled": false
+		}
 	}
 }

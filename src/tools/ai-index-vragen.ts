@@ -1,11 +1,12 @@
 import type { McpServer } from '@modelcontextprotocol/server';
 import * as z from 'zod/v4';
+import type { Gebruiksteller } from '../gebruiksteller';
 import { brancheNamen, getal, index, metBron, zoekBranche } from './ai-index-gedeeld';
 
 const STANDAARD_MAX = 10;
 const HARDE_MAX = 40;
 
-export function registreerAiIndexVragen(server: McpServer): void {
+export function registreerAiIndexVragen(server: McpServer, telGebruik: Gebruiksteller): void {
   server.registerTool(
     'ai_index_vragen',
     {
@@ -39,9 +40,10 @@ export function registreerAiIndexVragen(server: McpServer): void {
           .optional()
           .describe(`Aantal vragen dat je terugkrijgt (standaard ${STANDAARD_MAX}, alle ${HARDE_MAX} mag ook)`),
       }),
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: true, openWorldHint: false },
     },
     async ({ branche, max }) => {
+      telGebruik('ai_index_vragen');
       const uitkomst = zoekBranche(branche);
 
       if (uitkomst.soort === 'geen') {

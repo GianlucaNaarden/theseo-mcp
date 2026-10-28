@@ -1,5 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/server';
 import * as z from 'zod/v4';
+import type { Gebruiksteller } from '../gebruiksteller';
 import {
   getal,
   index,
@@ -67,7 +68,7 @@ function rijNaarRegels(rij: BedrijfRij): string[] {
   return regels;
 }
 
-export function registreerAiIndexBedrijf(server: McpServer): void {
+export function registreerAiIndexBedrijf(server: McpServer, telGebruik: Gebruiksteller): void {
   server.registerTool(
     'ai_index_bedrijf',
     {
@@ -94,9 +95,10 @@ export function registreerAiIndexBedrijf(server: McpServer): void {
           .max(120)
           .describe('De bedrijfsnaam die je wilt opzoeken, bijvoorbeeld "Coolblue" of "bol.com"'),
       }),
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: true, openWorldHint: false },
     },
     async ({ bedrijfsnaam }) => {
+      telGebruik('ai_index_bedrijf');
       const { treffers, verwant } = zoekBedrijf(bedrijfsnaam);
 
       if (treffers.length === 0 && verwant.length === 0) {

@@ -67,6 +67,22 @@ test('skill_zoeken vindt een skill via de echte tool-aanroep', async () => {
   assert.match(tekst, /https:\/\/[a-z0-9.-]+\/assets\/skills\/.*\.zip/);
 });
 
+test('skill_zoeken vindt ook een vakskill die bij een artikel hoort', async () => {
+  // Tot augustus 2026 keek de generator alleen naar de skills-hub, waardoor de
+  // vakskills uit golf 1 (dakdekkers, schoonmaak, tandartsen, rijscholen) in
+  // geen enkele zoekopdracht terugkwamen. Deze test loopt door de echte
+  // tool-aanroep en houdt dat gat dicht.
+  const resultaat = await client.callTool({
+    name: 'skill_zoeken',
+    arguments: { onderwerp: 'lokale seo dakdekker', max: 3 },
+  });
+  assert.notEqual(resultaat.isError, true);
+  const inhoud = resultaat.content as Array<{ type: string; text: string }>;
+  const tekst = inhoud[0].text;
+  assert.match(tekst, /dakdekker/i);
+  assert.match(tekst, /https:\/\/[a-z0-9.-]+\/assets\/skills\/lokale-seo-voor-dakdekkers-skill\.zip/);
+});
+
 test('bedrijfsbrein_template geeft het volledige sjabloon terug', async () => {
   const resultaat = await client.callTool({ name: 'bedrijfsbrein_template', arguments: {} });
   assert.notEqual(resultaat.isError, true);

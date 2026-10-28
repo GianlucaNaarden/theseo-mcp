@@ -9,16 +9,18 @@ export const SITE = 'https://theseo.nl';
 /**
  * Het adres dat we in antwoorden aan gebruikers meegeven.
  *
- * Let op: theseo.nl draait op dit moment nog de oude WordPress-site. De
- * nieuwe paginas en alle skill-downloads staan op de Worker. Zolang de
- * overzetting niet gedaan is, geeft elke https://theseo.nl/assets/skills/...
- * link een 404, en dat is precies wat een gebruiker van skill_zoeken te zien
- * kreeg. Daarom wijzen de links voorlopig naar het Worker-adres.
+ * Tot 22 september 2026 draaide theseo.nl nog de oude WordPress-site en gaf
+ * elke https://theseo.nl/assets/skills/... link een 404. Daarom wezen de
+ * links naar het Worker-adres.
  *
- * Bij de overzetting: zet dit terug op SITE en klaar. De catalogus zelf
- * bewaart de theseo.nl-adressen, dus er hoeft verder niets mee te gebeuren.
+ * Sinds 22-09-2026 ongeveer 22:00 wijst theseo.nl via een route naar de
+ * site-Worker. Gemeten op die avond: https://theseo.nl/ geeft de nieuwe
+ * startpagina, alle 474 Nederlandse paginas geven 200 en de skill-downloads
+ * staan er. Daarmee is de voorwaarde uit de regel hierboven vervuld en gaat
+ * dit terug naar SITE, zodat elke AI die onze skills ophaalt het echte adres
+ * krijgt in plaats van een testadres.
  */
-export const PUBLIEKE_BASIS = UPSTREAM_BASIS;
+export const PUBLIEKE_BASIS = SITE;
 
 /** Zet theseo.nl-adressen om naar het adres dat vandaag werkt. */
 export function publiekAdres(url: string): string {
@@ -28,50 +30,65 @@ export function publiekAdres(url: string): string {
 /** Hoe lang we maximaal op een upstream-antwoord wachten (ms). */
 export const UPSTREAM_TIMEOUT_MS = 30_000;
 
-/**
- * De service-binding naar de site-Worker.
- *
- * Waarom dit nodig is: een gewone fetch van deze Worker naar de workers.dev
- * URL van de site-Worker blijft binnen hetzelfde account hangen en belandt bij
- * de statische bestanden in plaats van bij het script. `/api/scan` bestaat
- * daar niet als bestand, dus kwam er een 404 met een HTML-pagina terug en
- * meldde elke scan "onleesbaar antwoord". Van buitenaf werkte dezelfde
- * aanroep wel, wat het lang onzichtbaar hield. Een service-binding is de
- * ondersteunde route van Worker naar Worker en gaat rechtstreeks naar het
- * script.
- */
-let siteBinding: { fetch: typeof fetch } | undefined;
+/** De kop waarmee de site een aanroep via MCP herkent (BOUWPLAN MC1, ST2). */
+export const KANAAL_KOP = 'X-TheSEO-Kanaal';
+export const KANAAL_MCP = 'mcp';
 
-/** Wordt bij elk verzoek gezet vanuit de Worker-entry. De binding is per
- *  deployment constant, dus dit is veilig bij gelijktijdige verzoeken. */
-export function zetSiteBinding(env: unknown): void {
-  const kandidaat = (env as { SITE_WORKER?: { fetch: typeof fetch } } | null)?.SITE_WORKER;
-  if (kandidaat && typeof kandidaat.fetch === 'function') siteBinding = kandidaat;
+/**
+ * Alles met een fetch-methode: in productie de service-binding naar de
+ * site-Worker (Fetcher), in tests een nepversie.
+ *
+ * Waarom de binding nodig is: een gewone fetch van deze Worker naar de
+ * workers.dev URL van de site-Worker blijft binnen hetzelfde account hangen en
+ * belandt bij de statische bestanden in plaats van bij het script. `/api/scan`
+ * bestaat daar niet als bestand, dus kwam er een 404 met een HTML-pagina terug
+ * en meldde elke scan "onleesbaar antwoord" (Cloudflare-fout 1042, commit
+ * 6e855b0). Een service-binding is de ondersteunde route van Worker naar
+ * Worker en gaat rechtstreeks naar het script.
+ *
+ * De binding gaat als parameter mee (deps), nooit via een globale variabele,
+ * zodat het platform en deze Worker elk hun eigen binding meegeven.
+ */
+export interface SiteFetcher {
+  fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
+}
+
+export type UpstreamAntwoord = { data?: Record<string, unknown>; fout?: string };
+export type Upstream = (pad: string, body: Record<string, unknown>) => Promise<UpstreamAntwoord>;
+
+/** Pakt de site-binding uit een Worker-omgeving, of niets als die ontbreekt. */
+export function siteUit(env: unknown): SiteFetcher | undefined {
+  const kandidaat = (env as { SITE_WORKER?: SiteFetcher } | null | undefined)?.SITE_WORKER;
+  return kandidaat && typeof kandidaat.fetch === 'function' ? kandidaat : undefined;
 }
 
 /**
- * Roept een TheSEO API-endpoint aan en geeft het JSON-antwoord terug,
- * of een eerlijk Nederlands foutbericht als het niet lukt.
+ * Maakt de functie waarmee een tool een TheSEO API-endpoint aanroept. Zonder
+ * binding valt hij terug op gewone fetch (handig lokaal, niet in productie).
+ * Elk verzoek draagt de kanaalkop; de body is alleen de toolinvoer.
  */
-export async function roepUpstreamAan(
-  pad: string,
-  body: Record<string, unknown>,
-): Promise<{ data?: Record<string, unknown>; fout?: string }> {
-  const verzoek: RequestInit = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-    signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+export function maakUpstream(site?: SiteFetcher): Upstream {
+  return async (pad, body) => {
+    const verzoek: RequestInit = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', [KANAAL_KOP]: KANAAL_MCP },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+    };
+    let res: Response;
+    try {
+      res = site
+        ? await site.fetch(`${UPSTREAM_BASIS}${pad}`, verzoek)
+        : await fetch(`${UPSTREAM_BASIS}${pad}`, verzoek);
+    } catch {
+      return { fout: 'De TheSEO server reageerde niet op tijd. Probeer het zo nog eens.' };
+    }
+    return leesAntwoord(res);
   };
-  let res: Response;
-  try {
-    res = siteBinding
-      ? await siteBinding.fetch(`${UPSTREAM_BASIS}${pad}`, verzoek)
-      : await fetch(`${UPSTREAM_BASIS}${pad}`, verzoek);
-  } catch {
-    return { fout: 'De TheSEO server reageerde niet op tijd. Probeer het zo nog eens.' };
-  }
+}
 
+/** Zet een upstream-antwoord om naar data of een eerlijk Nederlands foutbericht. */
+async function leesAntwoord(res: Response): Promise<UpstreamAntwoord> {
   let data: unknown;
   try {
     data = await res.json();

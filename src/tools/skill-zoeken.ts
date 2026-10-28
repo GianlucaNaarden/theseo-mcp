@@ -2,6 +2,10 @@ import { publiekAdres } from '../config';
 import type { McpServer } from '@modelcontextprotocol/server';
 import * as z from 'zod/v4';
 import catalogus from '../catalogus.json';
+import type { Gebruiksteller } from '../gebruiksteller';
+import type { PremiumSkillNaam } from '../premium-namen';
+
+export type { PremiumSkillNaam } from '../premium-namen';
 
 export interface SkillItem {
   slug: string;
@@ -16,6 +20,14 @@ export interface SkillTreffer extends SkillItem {
   score: number;
 }
 
+export interface PremiumTreffer extends PremiumSkillNaam {
+  score: number;
+}
+
+export type GemengdeTreffer =
+  | { soort: 'gratis'; skill: SkillTreffer }
+  | { soort: 'premium'; skill: PremiumTreffer };
+
 const STANDAARD_MAX = 5;
 
 function termen(onderwerp: string): string[] {
@@ -26,38 +38,68 @@ function termen(onderwerp: string): string[] {
 }
 
 /**
- * Doorzoekt de skill-catalogus op onderwerp. Puur en zonder netwerk, zodat
- * hij los testbaar is. Een treffer in de naam weegt zwaarder dan een treffer
- * in de beschrijving, omdat de beschrijvingen lang zijn en veel losse
- * trefwoorden bevatten.
+ * Een treffer in de naam weegt zwaarder dan een treffer in de beschrijving,
+ * omdat de beschrijvingen lang zijn en veel losse trefwoorden bevatten.
  */
+function scoreVoor(
+  zoektermen: readonly string[],
+  velden: { naam: string; slug: string; cluster: string; tekst: string },
+): number {
+  const naam = velden.naam.toLowerCase();
+  const slug = velden.slug.toLowerCase();
+  const cluster = velden.cluster.toLowerCase();
+  const tekst = velden.tekst.toLowerCase();
+
+  let score = 0;
+  for (const term of zoektermen) {
+    if (naam.includes(term)) score += 10;
+    else if (slug.includes(term)) score += 6;
+    if (cluster.includes(term)) score += 3;
+    if (tekst.includes(term)) score += 2;
+  }
+  return score;
+}
+
+/** Doorzoekt de gratis catalogus op onderwerp. Puur en zonder netwerk. */
 export function zoekSkills(
   items: readonly SkillItem[],
   onderwerp: string,
   max: number = STANDAARD_MAX,
 ): SkillTreffer[] {
+  return zoekMetPremium(items, [], onderwerp, max)
+    .flatMap((t) => (t.soort === 'gratis' ? [t.skill] : []));
+}
+
+/**
+ * Doorzoekt de gratis catalogus en, als het platform die meegeeft, de
+ * premiumnamen. Beide komen in een ranglijst; max geldt voor het geheel.
+ */
+export function zoekMetPremium(
+  gratis: readonly SkillItem[],
+  premium: readonly PremiumSkillNaam[],
+  onderwerp: string,
+  max: number = STANDAARD_MAX,
+): GemengdeTreffer[] {
   const zoektermen = termen(onderwerp);
   if (zoektermen.length === 0) return [];
 
-  const scored = items.map((item) => {
-    const naam = item.naam.toLowerCase();
-    const slug = item.slug.toLowerCase();
-    const cluster = item.cluster.toLowerCase();
-    const beschrijving = item.beschrijving.toLowerCase();
+  const alle: GemengdeTreffer[] = [
+    ...gratis.map((item): GemengdeTreffer => ({
+      soort: 'gratis',
+      skill: {
+        ...item,
+        score: scoreVoor(zoektermen, { ...item, tekst: item.beschrijving }),
+      },
+    })),
+    ...premium.map((item): GemengdeTreffer => ({
+      soort: 'premium',
+      skill: { ...item, score: scoreVoor(zoektermen, { ...item, cluster: '', tekst: item.zin }) },
+    })),
+  ];
 
-    let score = 0;
-    for (const term of zoektermen) {
-      if (naam.includes(term)) score += 10;
-      else if (slug.includes(term)) score += 6;
-      if (cluster.includes(term)) score += 3;
-      if (beschrijving.includes(term)) score += 2;
-    }
-    return { ...item, score };
-  });
-
-  return scored
-    .filter((s) => s.score > 0)
-    .sort((a, b) => b.score - a.score || a.naam.localeCompare(b.naam))
+  return alle
+    .filter((t) => t.skill.score > 0)
+    .sort((a, b) => b.skill.score - a.skill.score || a.skill.naam.localeCompare(b.skill.naam))
     .slice(0, max);
 }
 
@@ -66,17 +108,49 @@ function kort(tekst: string, maxLengte = 240): string {
   return `${tekst.slice(0, maxLengte).replace(/\s+\S*$/, '')}…`;
 }
 
-export function registreerSkillZoeken(server: McpServer): void {
+function trefferNaarTekst(treffer: GemengdeTreffer, nummer: number): string {
+  if (treffer.soort === 'premium') {
+    const t = treffer.skill;
+    return [
+      `${nummer}. ${t.naam} (premium)`,
+      `   ${kort(t.zin)}`,
+      '   Geen zip-download: premium skills komen via je verbonden TheSEO-account.',
+    ].join('\n');
+  }
+  const t = treffer.skill;
+  return [
+    `${nummer}. ${t.naam} (cluster: ${t.cluster})`,
+    `   ${kort(t.beschrijving)}`,
+    `   Pagina: ${publiekAdres(t.pagina)}`,
+    `   Download: ${publiekAdres(t.download)}`,
+  ].join('\n');
+}
+
+function beschrijving(metPremium: boolean): string {
+  const basis = `Doorzoekt de catalogus van ${catalogus.aantal} gratis Nederlandstalige Claude-skills van `
+    + 'theseo.nl op onderwerp (bijvoorbeeld "swot", "copywriting", "beslissen", "linkedin"). '
+    + 'Geeft per treffer de naam, beschrijving, de pagina met uitleg en de directe download-URL '
+    + 'van de zip terug. Alle skills zijn gratis en werken in Claude, Claude Code en andere '
+    + 'omgevingen die Agent Skills ondersteunen.';
+  if (!metPremium) return basis;
+  return `${basis} Voor deze verbinding staan ook de premium skills van TheSEO in de treffers, `
+    + 'met naam en een korte zin; die hebben geen zip-download.';
+}
+
+/**
+ * Registreert skill_zoeken. `premium` is leeg tenzij het platform een
+ * gevalideerde lijst meegeeft voor een ingelogde abonnee.
+ */
+export function registreerSkillZoeken(
+  server: McpServer,
+  telGebruik: Gebruiksteller,
+  premium: readonly PremiumSkillNaam[] = [],
+): void {
   server.registerTool(
     'skill_zoeken',
     {
       title: 'Gratis Claude-skill zoeken',
-      description:
-        `Doorzoekt de catalogus van ${catalogus.aantal} gratis Nederlandstalige Claude-skills van `
-        + 'theseo.nl op onderwerp (bijvoorbeeld "swot", "copywriting", "beslissen", "linkedin"). '
-        + 'Geeft per treffer de naam, beschrijving, de pagina met uitleg en de directe download-URL '
-        + 'van de zip terug. Alle skills zijn gratis en werken in Claude, Claude Code en andere '
-        + 'omgevingen die Agent Skills ondersteunen.',
+      description: beschrijving(premium.length > 0),
       inputSchema: z.object({
         onderwerp: z
           .string()
@@ -91,10 +165,11 @@ export function registreerSkillZoeken(server: McpServer): void {
           .optional()
           .describe(`Maximum aantal resultaten (standaard ${STANDAARD_MAX})`),
       }),
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: true, openWorldHint: false },
     },
     async ({ onderwerp, max }) => {
-      const treffers = zoekSkills(catalogus.skills, onderwerp, max ?? STANDAARD_MAX);
+      telGebruik('skill_zoeken');
+      const treffers = zoekMetPremium(catalogus.skills, premium, onderwerp, max ?? STANDAARD_MAX);
 
       if (treffers.length === 0) {
         return {
@@ -108,17 +183,10 @@ export function registreerSkillZoeken(server: McpServer): void {
         };
       }
 
-      const regels = treffers.map((t, i) => [
-        `${i + 1}. ${t.naam} (cluster: ${t.cluster})`,
-        `   ${kort(t.beschrijving)}`,
-        `   Pagina: ${publiekAdres(t.pagina)}`,
-        `   Download: ${publiekAdres(t.download)}`,
-      ].join('\n'));
-
       const tekst = [
         `${treffers.length} skill(s) gevonden voor "${onderwerp}":`,
         '',
-        ...regels,
+        ...treffers.map((t, i) => trefferNaarTekst(t, i + 1)),
         '',
         `Volledige catalogus (${catalogus.aantal} skills): ${catalogus.bron}`,
       ].join('\n');
