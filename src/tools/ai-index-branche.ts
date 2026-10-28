@@ -89,13 +89,10 @@ export function registreerAiIndexBranche(server: McpServer, telGebruik: Gebruiks
         + 'meest genoemde bedrijven met hun aantal vermeldingen, en hoe geconcentreerd het beeld is '
         + '(welk aandeel van alle vermeldingen naar die tien gaat). '
         + 'Dit zijn tellingen van wat het model gpt-5-mini uit zichzelf noemt, niets meer. '
-        + 'Grenzen die je bij het gebruik moet aanhouden: dit is niet ChatGPT met webzoeken maar '
-        + 'gpt-5-mini via de API zonder webtoegang en zonder geheugen, dus doe geen uitspraken over '
-        + 'ChatGPT als product; er is met temperature 1 gemeten, dus verschillen tussen meetmomenten '
-        + 'zijn deels toeval en er zijn geen trends over de tijd uit af te leiden; de data zegt niets '
-        + 'over bezoekers, klikken of omzet; de bedrijfsnamen zijn modeloutput en geen geverifieerd '
-        + 'register, ze zijn niet nagelopen bij de KvK; en een hoge of lage plek is een telling, geen '
-        + 'kwaliteitsoordeel over een bedrijf.',
+        + 'Gemeten via de API zonder webtoegang en zonder geheugen, niet in ChatGPT als product, met '
+        + 'temperature 1: verschillen tussen meetmomenten zijn deels toeval en vormen geen trend. De '
+        + 'data bevat geen bezoekers, klikken of omzet. De bedrijfsnamen zijn modeloutput, niet '
+        + 'nagelopen bij de KvK, en een plek in de top tien is een telling, geen kwaliteitsoordeel.',
       inputSchema: z.object({
         branche: z
           .string()

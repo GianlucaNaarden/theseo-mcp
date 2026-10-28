@@ -80,14 +80,11 @@ export function registreerAiIndexBedrijf(server: McpServer, telGebruik: Gebruiks
         + 'vergelijken zonder hoofdletters, accenten, spaties, koppeltekens en punten; verschillende '
         + 'entiteiten worden nooit samengevoegd, dus Capgemini en Capgemini Nederland blijven twee '
         + 'aparte tellingen precies zoals het model ze noemde. '
-        + 'Grenzen die je bij het gebruik moet aanhouden: niet voorkomen is geen oordeel over een '
-        + 'bedrijf, want de meeste bedrijven komen er niet in voor en dit is een steekproef met een '
-        + 'vast vragenlijstje; wel voorkomen zegt niets over bezoekers, klikken of omzet, want een '
-        + 'verkeerseffect is nooit gemeten; er is met temperature 1 gemeten, dus verschillen tussen '
-        + 'meetmomenten zijn deels toeval en er is geen trend over de tijd uit af te lezen; dit is '
-        + 'gpt-5-mini via de API zonder webtoegang, niet ChatGPT als product; en de namen zijn '
-        + 'modeloutput die niet bij de KvK is nagelopen, het model kan namen verhaspelen of '
-        + 'buitenlandse partijen als Nederlands opvoeren.',
+        + 'Niet voorkomen is geen oordeel: het is een steekproef met een vaste vragenlijst waarin de '
+        + 'meeste bedrijven niet voorkomen. Wel voorkomen zegt niets over bezoekers, klikken of omzet. '
+        + 'Gemeten met gpt-5-mini via de API zonder webtoegang, niet in ChatGPT als product, met '
+        + 'temperature 1, dus zonder trend over de tijd. De namen zijn modeloutput die niet bij de KvK '
+        + 'is nagelopen; het model kan namen verhaspelen.',
       inputSchema: z.object({
         bedrijfsnaam: z
           .string()

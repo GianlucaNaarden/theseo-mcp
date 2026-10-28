@@ -17,12 +17,10 @@ export function registreerAiIndexVragen(server: McpServer, telGebruik: Gebruikst
         + 'elke vraag staat, het model, de instelling en de meetcyclus. Bedoeld om onze meting na te '
         + 'kunnen spelen: wie dezelfde vraag met dezelfde prompt aan hetzelfde model stelt, hoort een '
         + 'vergelijkbare lijst terug te krijgen. '
-        + 'Grenzen die je bij het gebruik moet aanhouden: er is met temperature 1 gemeten, dus '
-        + 'dezelfde vraag levert niet twee keer exact dezelfde tien namen op en verschillen tussen '
-        + 'momenten zijn deels samplingruis; de meting gaat via de API naar gpt-5-mini zonder '
-        + 'webtoegang en zonder geheugen, dus dit is niet wat ChatGPT als product aan consumenten '
-        + 'antwoordt; en de vragenlijst zegt niets over zoekvolume, bezoekers of omzet, het zijn '
-        + 'geen zoekwoorden maar hele klantzinnen.',
+        + 'Gemeten met temperature 1, dus dezelfde vraag geeft niet steeds exact dezelfde tien namen. '
+        + 'De meting gaat via de API naar gpt-5-mini zonder webtoegang en zonder geheugen, niet via '
+        + 'ChatGPT als product. De vragen zijn hele klantzinnen, geen zoekwoorden, en zeggen niets '
+        + 'over zoekvolume, bezoekers of omzet.',
       inputSchema: z.object({
         branche: z
           .string()
@@ -95,7 +93,7 @@ export function registreerAiIndexVragen(server: McpServer, telGebruik: Gebruikst
             + `(${getal(m.aantalVragen)} in totaal over alle branches):`,
             ...getoond.map(([nr, tekst]) => `  ${String(nr).padStart(2, ' ')}. ${tekst}`),
             ...(rest > 0
-              ? ['', `Nog ${rest} vragen niet getoond. Vraag opnieuw met max: ${b.vragen.length} voor de hele lijst.`]
+              ? ['', `Nog ${rest} vragen niet getoond (max kan tot ${b.vragen.length}).`]
               : []),
             '',
             'Let op: speel je dit na, dan krijg je niet dezelfde tien namen terug. Met temperature 1 '
