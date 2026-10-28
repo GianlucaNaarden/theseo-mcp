@@ -92,7 +92,8 @@ export function registreerAiIndexBedrijf(server: McpServer, telGebruik: Gebruiks
           .max(120)
           .describe('De bedrijfsnaam die je wilt opzoeken, bijvoorbeeld "Coolblue" of "bol.com"'),
       }),
-      annotations: { readOnlyHint: true, openWorldHint: false },
+      // title ook in annotations: de Claude-directory leest hem daar (portaal 28-10-2026).
+      annotations: { title: 'AI-Index: komt een bedrijfsnaam voor in de metingen', readOnlyHint: true, idempotentHint: true, openWorldHint: false },
     },
     async ({ bedrijfsnaam }) => {
       telGebruik('ai_index_bedrijf');

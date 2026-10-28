@@ -41,7 +41,7 @@ export function registreerVindbaarheid(
           .describe('De naam van het bedrijf zoals klanten het zoeken'),
         stad: z.string().min(1).max(80).describe('De plaats waar het bedrijf gevestigd is'),
       }),
-      annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true },
+      annotations: { title: 'Lokale vindbaarheidscheck (Google Maps)', readOnlyHint: false, destructiveHint: false, openWorldHint: true },
     },
     async ({ bedrijfsnaam, stad }) => {
       telGebruik('lokale_vindbaarheid_check');

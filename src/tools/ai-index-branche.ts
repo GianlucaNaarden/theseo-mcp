@@ -103,7 +103,8 @@ export function registreerAiIndexBranche(server: McpServer, telGebruik: Gebruiks
             + 'Kleine letters en een deel van de naam zijn genoeg.',
           ),
       }),
-      annotations: { readOnlyHint: true, openWorldHint: false },
+      // title ook in annotations: de Claude-directory leest hem daar (portaal 28-10-2026).
+      annotations: { title: 'AI-Index: wie noemt het model in een branche', readOnlyHint: true, idempotentHint: true, openWorldHint: false },
     },
     async ({ branche }) => {
       telGebruik('ai_index_branche');

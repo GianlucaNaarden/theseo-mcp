@@ -165,7 +165,8 @@ export function registreerSkillZoeken(
           .optional()
           .describe(`Maximum aantal resultaten (standaard ${STANDAARD_MAX})`),
       }),
-      annotations: { readOnlyHint: true, openWorldHint: false },
+      // title ook in annotations: de Claude-directory leest hem daar (portaal 28-10-2026).
+      annotations: { title: 'Gratis Claude-skill zoeken', readOnlyHint: true, idempotentHint: true, openWorldHint: false },
     },
     async ({ onderwerp, max }) => {
       telGebruik('skill_zoeken');

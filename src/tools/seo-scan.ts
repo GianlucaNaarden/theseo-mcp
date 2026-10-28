@@ -51,7 +51,7 @@ export function registreerSeoScan(
           .max(400)
           .describe('De URL van de pagina die gescand moet worden, bijvoorbeeld https://voorbeeld.nl'),
       }),
-      annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: true },
+      annotations: { title: 'Gratis SEO-scan (24 punten)', readOnlyHint: false, destructiveHint: false, openWorldHint: true },
     },
     async ({ url }) => {
       telGebruik('seo_scan');

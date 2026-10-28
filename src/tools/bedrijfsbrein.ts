@@ -13,7 +13,8 @@ export function registreerBedrijfsbrein(server: McpServer, telGebruik: Gebruikst
         + 'invulbaar bedrijfsbrein.md contextbestand dat een AI leert wie een bedrijf is (aanbod, '
         + 'doelgroep, tone of voice, werkwijze). Gebruik dit om het sjabloon direct voor een bedrijf '
         + 'in te vullen. Werkt in Claude, ChatGPT, Codex en Cursor.',
-      annotations: { readOnlyHint: true, openWorldHint: false },
+      // title ook in annotations: de Claude-directory leest hem daar (portaal 28-10-2026).
+      annotations: { title: 'Bedrijfsbrein-sjabloon ophalen', readOnlyHint: true, idempotentHint: true, openWorldHint: false },
     },
     async () => {
       telGebruik('bedrijfsbrein_template');

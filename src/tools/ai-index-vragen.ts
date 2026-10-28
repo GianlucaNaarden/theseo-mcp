@@ -38,7 +38,8 @@ export function registreerAiIndexVragen(server: McpServer, telGebruik: Gebruikst
           .optional()
           .describe(`Aantal vragen dat je terugkrijgt (standaard ${STANDAARD_MAX}, alle ${HARDE_MAX} mag ook)`),
       }),
-      annotations: { readOnlyHint: true, openWorldHint: false },
+      // title ook in annotations: de Claude-directory leest hem daar (portaal 28-10-2026).
+      annotations: { title: 'AI-Index: de vragenlijst van een branche', readOnlyHint: true, idempotentHint: true, openWorldHint: false },
     },
     async ({ branche, max }) => {
       telGebruik('ai_index_vragen');
