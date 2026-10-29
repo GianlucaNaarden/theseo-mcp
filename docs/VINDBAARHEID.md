@@ -35,6 +35,8 @@ Daarna een mail naar partnerships@github.com met de vraag om opname in github.co
 
 ## 2. Claude-directory (claude.ai)
 
+**Stand 29-10-2026: verstuurd, status In review** (slug theseo-ai-index, https://mcp.theseo.nl/open, zes tools, geen inlog). Volgen op https://claude.ai/directory/manage/theseo-ai-index; vragen van de reviewers komen per mail naar de primaire contactpersoon. Een concept in het portaal leeft alleen in de browser waarin het is ingevuld; vul bij verlies opnieuw in met de teksten hieronder.
+
 Waar: https://claude.ai/directory/manage, Submit new, MCP connector. Kan alleen met een betaald Claude-plan.
 
 Aanmelden met het adres **https://mcp.theseo.nl/open**, niet /mcp. Reden: het directorybeleid (Software Directory Policy 3F) eist dat je elke API en elke externe bron bezit of beheert die de connector aanspreekt. /open heeft alleen de zes tools op eigen gegevens (de drie AI-Index-tools, merk per model, gat, vakregels) en vraagt nooit om in te loggen. skill_zoeken en het bedrijfsbrein-sjabloon blijven op /mcp: hun uitvoer bevat zinnen die zich tot de AI richten en verwijzingen naar eigen pagina's. De tools die bij derden ophalen (social, open voertuigdata, CBS, PDOK, crawlercheck) en de accounttools blijven op /mcp voor wie die zelf toevoegt. Zodra de accounts open zijn (JU1 vastgesteld) kan de vermelding worden uitgebreid met "Required when the server asks".
@@ -66,7 +68,7 @@ Voorwaarden voor het versturen, in deze volgorde:
 9. **Compliance:** de zeven verklaringen lezen en accepteren (Gianluca).
 10. **Review and submit:** waarschuwingen nalezen, dan versturen.
 
-Escalatie: mcp-review@anthropic.com.
+Escalatie: directory@anthropic.com (zo genoemd op de aanmeldpagina, 29-10).
 
 ## 3. ChatGPT
 
